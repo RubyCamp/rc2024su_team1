@@ -1,10 +1,10 @@
 module Scenes
   module Game
     module Card
-      class MatueCastle < Base
-        SUIT_MARK = "♥"
-        SUIT_COLOR = 0xff_ff0000
-        NUMBER_COLOR = 0xff_ff0000
+      class Card3 < Base
+        def initialize(_x, _y, _z = 1)
+          super(3, _x, _y, _z, "images/card1.png","〇","このカードを出すとき")
+        end
       end
     end
   end

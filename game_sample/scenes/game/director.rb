@@ -1,8 +1,12 @@
 require_relative 'card/base'
-require_relative 'card/spade'
-require_relative 'card/diamond'
-require_relative 'card/heart'
-require_relative 'card/club'
+require_relative 'card/No.1_yaegakishrine'
+require_relative 'card/No.2_yamatanooroti'
+require_relative 'card/No.3_matuecastle'
+require_relative 'card/No.4_loach'
+require_relative 'card/No.5_matcha'
+require_relative 'card/No.6_izumosoba'
+require_relative 'card/No.7_sanreiku'
+require_relative 'card/No.8_izumotemple'
 
 module Scenes
   module Game
@@ -26,7 +30,7 @@ module Scenes
         super
         # 画像オブジェクトの読み込み
         @bg_img = Gosu::Image.new("images/bg_game.png", tileable: true)
-        @timelimit_bar = Gosu::Image.new("images/timelimit_bar.png", tileable: true)
+        @card = Scenes::Game::Card::Card1.new(100, 200)
         @bgm = load_bgm("bgm2.mp3", 0.1)
 
         # 各種インスタンス変数の初期化
@@ -46,10 +50,14 @@ module Scenes
         # NOTE: 各カードのZ値は、生成順に1から順にインクリメントして重ね合わせを表現する
         z = 1
         [
-          Card::Spade,
-          Card::Diamond,
-          Card::Heart,
-          Card::Club
+          Card::Card1,
+          Card::Card2,
+          Card::Card3,
+          Card::Card4,
+          Card::Card5,
+          Card::Card6,
+          Card::Card7,
+          Card::Card8
         ].each do |klass|
           1.upto(SUIT_AMOUNT) do |num|
             x = rand(MainWindow::WIDTH - Card::Base::WIDTH)
@@ -73,12 +81,6 @@ module Scenes
         if @cleared && @message_display_frame_count == 0
           @bgm.stop if @bgm && @bgm.playing?
           transition(:ending)
-        end
-
-        # タイムラインバーの長さが0になったらゲームオーバーとする
-        if @timelimit_scale <= 0
-          @bgm.stop if @bgm && @bgm.playing?
-          transition(:game_over)
         end
 
         # メッセージ表示中とそれ以外で処理を分岐

@@ -1,4 +1,5 @@
 require 'gosu'  # 追加: Gosuを読み込む
+require_relative '../../director_base'
 
 module Scenes
   module Game

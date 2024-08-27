@@ -7,6 +7,7 @@ require_relative 'card/No.5_matcha'
 require_relative 'card/No.6_izumosoba'
 require_relative 'card/No.7_sanreiku'
 require_relative 'card/No.8_izumotemple'
+require_relative '../director_base'
 
 module Scenes
   module Game
@@ -21,8 +22,6 @@ module Scenes
       MESSAGE_DISPLAY_FRAMES = 60       # 当たり／ハズレのメッセージを画面上に表示しておくフレーム数（60フレーム＝2秒）
       JUDGEMENT_MESSAGE_Y_POS = 250     # 当たり／ハズレのメッセージを表示するY座標
       TIMELIMIT_BAR_Z_INDEX = 3500      # 当たり／ハズレのメッセージを表示するZ座標（奥行）
-      TIMELIMIT_SEC = 60                # タイムリミットバーの最大秒数
-      TIMELIMIT_BAR_MARGIN = 5          # タイムリミットバーの表示上の余白サイズ（ピクセル）
       FPS = 30                          # 1秒間の表示フレーム数
 
       # コンストラクタ
@@ -40,8 +39,6 @@ module Scenes
         @judgement_result = false                              # 当たり／ハズレの判定結果（true: 当たり）
         @score = 0                                             # 総得点
         @cleared = false                                       # ゲームクリアが成立したか否かを保持するフラグ
-        @timelimit_scale = 1.0                                 # タイムリミットバー画像の初期長さ（割合で減衰を表現する）
-        @timelimit_decrease_unit = 1.0 / TIMELIMIT_SEC / FPS   # タイムリミットバーの減衰単位
         @drag_start_pos = nil                                  # マウスドラッグ用フラグ兼ドラッグ開始位置記憶用変数
         @offset_mx = 0                                         # マウスドラッグ中のカーソル座標補正用変数（X成分用）
         @offset_my = 0                                         # マウスドラッグ中のカーソル座標補正用変数（Y成分用）
@@ -61,7 +58,7 @@ module Scenes
         ].each do |klass|
           1.upto(SUIT_AMOUNT) do |num|
             x = rand(MainWindow::WIDTH - Card::Base::WIDTH)
-            y = rand(MainWindow::HEIGHT - Card::Base::HEIGHT - @timelimit_bar.height - TIMELIMIT_BAR_MARGIN)
+            y = rand(MainWindow::HEIGHT - Card::Base::HEIGHT)
             @cards << klass.new(num, x, y, z)
             z += 1
           end
@@ -96,10 +93,6 @@ module Scenes
           check_mouse_operations(mx, my)
           judgement
         end
-
-        # タイムリミットバーの長さを更新
-        # NOTE: メッセージ表示中か否かによらず、毎フレーム一定の減衰を行うため、条件分岐の外に定義する
-        @timelimit_scale -= @timelimit_decrease_unit if @timelimit_scale > 0
       end
 
       # 1フレーム分の描画処理
@@ -120,9 +113,6 @@ module Scenes
 
         # スコアを表示
         draw_text("SCORE: #{@score}", :right, 5, font: :score, color: :white)
-
-        # タイムリミットバーを表示
-        @timelimit_bar.draw(0, MainWindow::HEIGHT - @timelimit_bar.height, TIMELIMIT_BAR_Z_INDEX, @timelimit_scale)
       end
 
       private

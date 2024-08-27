@@ -1,7 +1,7 @@
 module Scenes
   module Game
     module Card
-      class Club < Base
+      class YaegakiShrine < Base
         SUIT_MARK = "♣"
         SUIT_COLOR = 0xff_000000
         NUMBER_COLOR = 0xff_000000

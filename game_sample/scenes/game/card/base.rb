@@ -15,7 +15,7 @@ module Scenes
 
         attr_accessor :num, :x, :y, :z, :suit, :effect_text, :image
 
-        def initialize(_num, _x, _y, _z = 1, image_path, suit, effect_text)
+        def initializedef initialize(_num, _x, _y, _z = 1)
           @reversed = true # 裏返し状態かどうか
           self.num = _num
           self.x = _x

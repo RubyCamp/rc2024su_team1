@@ -21,7 +21,7 @@ module Scenes
 
       # 1フレーム分の描画処理
       def draw
-        @bg_img.draw(0, 0, 0)
+        Gosu.draw_rect(0, 0, 800, 600, Gosu::Color::BLACK)
         draw_text("Ruby合宿2024夏 Example Game", :center, 280, font: :title, color: :red)
         draw_text("Push SPACE Key to start", :center, 350)
       end

@@ -12,9 +12,10 @@ module Scenes
       super
       # 画像オブジェクトの読み込み
       @bg_img = Gosu::Image.new("images/bg_game.png", tileable: true)
+      @card_number = rand(1..8)
 
       # 各種インスタンス変数の初期化
-      @card=Card::Base.new(rand(1..8), 400, 390, 1)
+      @card=Card::Base.new(@card_number, 400, 390, 1)
       
       @drag_start_pos = nil                                  # マウスドラッグ用フラグ兼ドラッグ開始位置記憶用変数
       @offset_mx = 0                                         # マウスドラッグ中のカーソル座標補正用変数（X成分用）

@@ -19,6 +19,8 @@ module Scenes
         HEIGHT = 200             # カード高さ（px）
         SUIT_MARK_OFFSET_X = 5   # カードの種別マークのX方向表示位置（カードの左上からの相対値）
         SUIT_MARK_OFFSET_Y = 5   # カードの種別マークのY方向表示位置（カードの左上からの相対値）
+        CARD_TEXT_EFFECT_X = 5
+        CARD_TEXT_EFFECT_Y = 130
         SCALE = 1                # 描画時の表示倍率
         IMGS = {
             1 => Gosu::Image.new("images/yaegakishrine_dot.png", tileable: true),
@@ -30,6 +32,17 @@ module Scenes
             7 => Gosu::Image.new("images/sunreiku_dot.png", tileable: true),
             8 => Gosu::Image.new("images/izumotaisha_dot.png", tileable: true),
           }
+
+        CARD_TEXT = {
+          1 => "相手の持っているカー\nドの数字を当てると相\n手は脱落する。",
+          2 => "相手の持っているカー\nドを盗み見る",
+          3 => "相手とカードの数字で\n勝負し、数字の小さい\n方は脱落する。",
+          4 => "次の自分のターンまで\n相手の攻撃を受けない",
+          5 => "相手か自分は手札を一\n枚捨てて山札からカー\nドを一枚ひく。",
+          6 => "相手プレイヤーと手札\nを交換する",
+          7 => "5,6を持っていた場合、\nこのカードは捨てなけ\nればならない",
+          8 => "このカードを捨てたプ\nレイヤーは脱落する",
+        }
 
         # 必要なアクセサメソッドの定義
         attr_accessor :num, :x, :y, :z
@@ -67,6 +80,7 @@ module Scenes
           @@card_foreground_img.draw(self.x, self.y, self.z)
           draw_suit_mark
           draw_number
+          draw_effect
         end
 
         # カードの種別マーク（Suit）の描画
@@ -78,6 +92,18 @@ module Scenes
             self.z,
             SCALE, SCALE,
             0xff_000000)
+        end
+
+        #カードの効果を描画
+        def draw_effect
+          @@suit_font.draw_text(
+            CARD_TEXT[@num],
+            self.x + CARD_TEXT_EFFECT_X,
+            self.y + CARD_TEXT_EFFECT_Y,
+            self.z,
+            SCALE*0.5, SCALE*0.5,
+            0xff_000000
+          )
         end
 
         # カードの描画

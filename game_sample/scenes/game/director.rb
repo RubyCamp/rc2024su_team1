@@ -1,8 +1,12 @@
 require_relative 'card/base'
-require_relative 'card/spade'
-require_relative 'card/diamond'
-require_relative 'card/heart'
-require_relative 'card/club'
+require_relative 'card/No.1_yaegakishrine'
+require_relative 'card/No.2_yamatanooroti'
+require_relative 'card/No.3_matuecastle'
+require_relative 'card/No.4_loach'
+require_relative 'card/No.5_matcha'
+require_relative 'card/No.6_izumosoba'
+require_relative 'card/No.7_sanreiku'
+require_relative 'card/No.8_izumotemple'
 
 module Scenes
   module Game
@@ -41,6 +45,7 @@ module Scenes
         @drag_start_pos = nil                                  # マウスドラッグ用フラグ兼ドラッグ開始位置記憶用変数
         @offset_mx = 0                                         # マウスドラッグ中のカーソル座標補正用変数（X成分用）
         @offset_my = 0                                         # マウスドラッグ中のカーソル座標補正用変数（Y成分用）
+        #@card = Card::Space.new(1, 400, 400, 1)
       end
 
       # 1フレーム分の更新処理
@@ -92,6 +97,7 @@ module Scenes
       def draw
         # 背景画像を表示
         Gosu.draw_rect(0, 0, 800, 600, Gosu::Color::BLACK)
+
 =begin
         # 全カードを表示
         # NOTE: 重なり合わせを適正に表現するため、各カードの最新Z値でソートして表示する（マウスクリックでカードのZ値が変化するため）

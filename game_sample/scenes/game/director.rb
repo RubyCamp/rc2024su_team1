@@ -41,45 +41,33 @@ module Scenes
         @drag_start_pos = nil                                  # マウスドラッグ用フラグ兼ドラッグ開始位置記憶用変数
         @offset_mx = 0                                         # マウスドラッグ中のカーソル座標補正用変数（X成分用）
         @offset_my = 0                                         # マウスドラッグ中のカーソル座標補正用変数（Y成分用）
-
-        # 4種のカードについて、それぞれ13枚ずつランダムな座標にカードをばら撒く
-        # NOTE: 各カードのZ値は、生成順に1から順にインクリメントして重ね合わせを表現する
-        z = 1
-        [
-          Card::Spade,
-          Card::Diamond,
-          Card::Heart,
-          Card::Club
-        ].each do |klass|
-          1.upto(SUIT_AMOUNT) do |num|
-            x = rand(MainWindow::WIDTH - Card::Base::WIDTH)
-            y = rand(MainWindow::HEIGHT - Card::Base::HEIGHT - @timelimit_bar.height - TIMELIMIT_BAR_MARGIN)
-            @cards << klass.new(num, x, y, z)
-            z += 1
-          end
-        end
       end
 
       # 1フレーム分の更新処理
       def update(opt = {})
         # BGMをスタートする（未スタート時のみ）
-        @bgm.play if @bgm && !@bgm.playing?
+        #@bgm.play if @bgm && !@bgm.playing?
 
         # マウスの現在座標を変数化しておく
         mx = opt.has_key?(:mx) ? opt[:mx] : 0
         my = opt.has_key?(:my) ? opt[:my] : 0
 
         # ゲームクリアフラグが立ち、且つ画面への判定結果表示が完了済みの場合、エンディングシーンへ切り替えを行う
-        if @cleared && @message_display_frame_count == 0
-          @bgm.stop if @bgm && @bgm.playing?
+        #if @cleared && @message_display_frame_count == 0
+          #@bgm.stop if @bgm && @bgm.playing?
+        if key_push?(Gosu::KB_SPACE)
           transition(:ending)
         end
 
+        
         # タイムラインバーの長さが0になったらゲームオーバーとする
+        ##
+=begin
         if @timelimit_scale <= 0
           @bgm.stop if @bgm && @bgm.playing?
           transition(:game_over)
         end
+=end
 
         # メッセージ表示中とそれ以外で処理を分岐
         if @message_display_frame_count > 0
@@ -97,30 +85,29 @@ module Scenes
 
         # タイムリミットバーの長さを更新
         # NOTE: メッセージ表示中か否かによらず、毎フレーム一定の減衰を行うため、条件分岐の外に定義する
-        @timelimit_scale -= @timelimit_decrease_unit if @timelimit_scale > 0
+        #@timelimit_scale -= @timelimit_decrease_unit if @timelimit_scale > 0
       end
 
       # 1フレーム分の描画処理
       def draw
         # 背景画像を表示
-        @bg_img.draw(0, 0, 0)
-
+        Gosu.draw_rect(0, 0, 800, 600, Gosu::Color::BLACK)
+=begin
         # 全カードを表示
         # NOTE: 重なり合わせを適正に表現するため、各カードの最新Z値でソートして表示する（マウスクリックでカードのZ値が変化するため）
         @cards.sort_by{|c| c.z }.each do |card|
           card.draw
         end
 
+
         # メッセージ表示フレーム数が2以上の場合はメッセージを表示する
         if @message_display_frame_count > 1
           draw_text(@message_body, :center, JUDGEMENT_MESSAGE_Y_POS, font: :judgement_result, color: @message_color)
         end
+=end
 
         # スコアを表示
-        draw_text("SCORE: #{@score}", :right, 5, font: :score, color: :white)
-
-        # タイムリミットバーを表示
-        @timelimit_bar.draw(0, MainWindow::HEIGHT - @timelimit_bar.height, TIMELIMIT_BAR_Z_INDEX, @timelimit_scale)
+        #draw_text("SCORE: #{@score}", :right, 5, font: :score, color: :white)
       end
 
       private
@@ -223,6 +210,7 @@ module Scenes
         @opened_card = nil
       end
 
+=begin
       # 開いたカードの後始末を行う
       def cleaning_up
         # 判定結果に沿って開いたカードの状態を変化させる
@@ -232,10 +220,9 @@ module Scenes
           c.reverse
           @cards.delete(c) if @judgement_result
         end
-
+=end
         # 開いたカードリストをクリア
-        @opened_cards.clear
-      end
+        #@opened_cards.clear
     end
   end
 end

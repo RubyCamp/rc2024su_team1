@@ -7,6 +7,7 @@ module Scenes
         super
         @bg_img = Gosu::Image.new("images/bg_ending.png", tileable: true)
         @bgm = load_bgm("bgm3.mp3", 0.3)
+        puts $winner
       end
 
       # 1フレーム分の更新処理

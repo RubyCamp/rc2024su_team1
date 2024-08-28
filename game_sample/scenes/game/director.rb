@@ -165,6 +165,11 @@ module Scenes
       
           if @p1_wol != "U" && @p2_wol != "U"
             puts "勝負あり"
+            if @p1_wol == "W"
+              $winner = "player1"
+            else
+              $winner = "player2"
+            end
             puts "p1の勝敗:#{@p1_wol}  p2の勝敗:#{@p2_wol}"
             break
           end
@@ -176,7 +181,6 @@ module Scenes
           puts ""
           puts "Next"
         end
-        puts "#{@p1_deck} #{@p2_deck}"
       end
       
 

@@ -9,7 +9,6 @@ module Scenes
         @@card_background_img = Gosu::Image.new("images/card_background.png", tileable: true)    # カードの裏面画像
         @@suit_font = Gosu::Font.new(40, name: DirectorBase::FONT_FILENAME)                      # カードのマーク描画用フォント
       
-
         # カードを裏返す際に鳴らす効果音読み込み
         # NOTE: インスタンス変数と違い、クラス変数は明確に初期化しないとnilとして扱われないので、ファイルが無い場合のnilを明確に代入しておく
         @@open_effect = nil

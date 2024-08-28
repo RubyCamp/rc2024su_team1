@@ -1,0 +1,1 @@
+Gosu.button_down?(Gosu::KB_ESCAPE)

@@ -5,28 +5,27 @@ module Scenes
   # ゲーム本編シーンの担当ディレクタークラス
   class Director < DirectorBase
     SUIT_AMOUNT = 8                  # 各マーク毎のカード枚数
-    
 
     # コンストラクタ
     def initialize
       super
       # 画像オブジェクトの読み込み
       @bg_img = Gosu::Image.new("images/bg_game.png", tileable: true)
-      @card_number = rand(1..8)
+      #山札を生成
+      @card_deck = [1,1,1,1,1,2,2,3,3,4,4,5,5,6,7,8]
+      @card_number = rand(0..@card_deck.size-1)
+      @card=Card::Base.new(@card_deck[@card_number], 290, 390, 1)
+      @card_deck.delete_at(@card_number)
 
-      # 各種インスタンス変数の初期化
-      @card=Card::Base.new(@card_number, 400, 390, 1)
-      
       @drag_start_pos = nil                                  # マウスドラッグ用フラグ兼ドラッグ開始位置記憶用変数
       @offset_mx = 0                                         # マウスドラッグ中のカーソル座標補正用変数（X成分用）
-      @offset_my = 0                                         # マウスドラッグ中のカーソル座標補正用変数（Y成分用）
-
-      
+      @offset_my = 0                                         # マウスドラッグ中のカーソル座標補正用変数（Y成分用)
     end
 
     # 1フレーム分の更新処理
     def update(opt = {})
-  
+      #Gosu.button_down?(Gosu::MsLeft)
+
     end
 
     # 1フレーム分の描画処理

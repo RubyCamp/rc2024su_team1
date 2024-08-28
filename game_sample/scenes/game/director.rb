@@ -48,6 +48,53 @@ module Scenes
         #@card = Card::Space.new(1, 400, 400, 1)
       end
 
+      original_array = [1, 1, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 7, 8]
+      deck = original_array.shuffle
+      puts "シャッフル前: #{original_array}"
+      puts "シャッフル後: #{deck}"
+
+      p1_deck = [1]
+      p2_deck = [1]
+
+      p1_wol = "U"
+      p2_wol = "U" 
+
+      #先攻、後攻を決める
+      start_order = [1, 2]
+      start_order = start_order.shuffle
+      
+      order = start_order[0] == 1 ? "p1" : "p2"
+      
+
+      #ゲーム開始
+      cc1 = Card::Effect1.new(p1_deck, p2_deck, order, p1_wol, p2_wol)
+      cc1.judge
+
+      p1_wol = cc1.p1_wol
+      p2_wol = cc1.p2_wol
+      puts p1_wol
+      puts p2_wol
+=begin
+      #山札がすべてなくなる，または，残り１人になるまで繰り返す
+      while idx < 15 && survivor.length != 1
+          #山札から１枚カードを引く
+          first_card << deck[idx]
+          idx += 1
+
+          #firstの処理
+
+          #山札から１枚カードを引く
+          second_card << deck[idx]
+          idx += 1
+
+          #secondの処理
+
+
+          puts "f #{first_card.join(', ')}"
+          puts "s #{second_card.join(', ')}"
+      end
+=end
+
       # 1フレーム分の更新処理
       def update(opt = {})
         # BGMをスタートする（未スタート時のみ）

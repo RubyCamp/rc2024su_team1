@@ -34,7 +34,14 @@ module Scenes
         # 各種インスタンス変数の初期化
         @cards = []
         @cards << Scenes::Game::Card::Card1.new(100,400,1)
-        @cards << Scenes::Game::Card::Card2.new(300,400,1)
+        @cards << Scenes::Game::Card::Card2.new(200,400,1)
+        @cards << Scenes::Game::Card::Card3.new(300,400,1)
+        @cards << Scenes::Game::Card::Card4.new(400,400,1)
+        @cards << Scenes::Game::Card::Card5.new(500,400,1)
+        @cards << Scenes::Game::Card::Card6.new(600,400,1)
+        @cards << Scenes::Game::Card::Card7.new(700,400,1)
+        @cards << Scenes::Game::Card::Card8.new(800,400,1)
+        
 
         #カードをランダムに並べ替える処理
         @cards.shuffle!

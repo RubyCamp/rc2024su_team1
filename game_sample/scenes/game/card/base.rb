@@ -13,7 +13,7 @@ module Scenes
         HEIGHT = 128 # カード高さ
         SCALE = 1    # 描画倍率
 
-        attr_accessor :num, :x, :y, :z, :suit, :effect_text, :imagesorce
+        attr_accessor :num, :x, :y, :z, :suit, :scale, :effect_text, :imagesorce, :illustimage
 
         def initialize(_num, _x, _y, _z = 1)
           @reversed = false # 裏返し状態かどうか
@@ -31,6 +31,7 @@ module Scenes
           @effect_w = @@effect_font.text_width(self.effect_text)
           @effect_h = @@effect_font.height
           @image = Gosu::Image.new(imagesorce, tileable: true) # カードの表面画像を設定
+          @illustration = Gosu::Image.new(illustimage, tileable: true)#カードのイラスト
         end
 
         # カードがクリックされたかを判定
@@ -64,6 +65,7 @@ module Scenes
         # カードの表側を描画
         def draw_foreground
           @image.draw(self.x, self.y, self.z)
+          @illustration.draw(self.x, self.y, self.z)
           draw_suit
           draw_number
           draw_effect_text

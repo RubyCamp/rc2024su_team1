@@ -68,8 +68,6 @@ module Scenes
           card.draw
         end
 
-        # スコアを表示
-        draw_text("SCORE: #{@score}", :right, 5, font: :score, color: :white)
       end
 
       private

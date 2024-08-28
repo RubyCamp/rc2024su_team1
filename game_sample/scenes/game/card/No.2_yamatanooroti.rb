@@ -9,6 +9,25 @@ module Scenes
           @effect_text = "you are death\nenemy is winner"  # カードの効果を設定
         end
       end
+
+      class Effect2
+        attr_accessor :p1_wol, :p2_wol
+        def initialize(p1_deck, p2_deck, order, p1_wol, p2_wol)
+          @p1_deck = p1_deck
+          @p2_deck = p2_deck
+          @order = order
+          @p1_wol = p1_wol
+          @p2_wol = p2_wol
+        end
+
+        def judge
+          if @order == "p1"
+            puts @p2_deck
+          else
+            puts @p1_deck
+          end
+        end
+      end
     end
   end
 end

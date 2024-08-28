@@ -1,8 +1,20 @@
 require_relative 'card/base'
+<<<<<<< HEAD
 require_relative 'card/spade'
 require_relative 'card/diamond'
 require_relative 'card/heart'
 require_relative 'card/club'
+=======
+require_relative 'card/No.1_yaegakishrine'
+require_relative 'card/No.2_yamatanooroti'
+require_relative 'card/No.3_matuecastle'
+require_relative 'card/No.4_loach'
+require_relative 'card/No.5_matcha'
+require_relative 'card/No.6_izumosoba'
+require_relative 'card/No.7_sanreiku'
+require_relative 'card/No.8_izumotemple'
+require_relative '../director_base'
+>>>>>>> utumi
 
 module Scenes
   module Game
@@ -17,8 +29,6 @@ module Scenes
       MESSAGE_DISPLAY_FRAMES = 60       # 当たり／ハズレのメッセージを画面上に表示しておくフレーム数（60フレーム＝2秒）
       JUDGEMENT_MESSAGE_Y_POS = 250     # 当たり／ハズレのメッセージを表示するY座標
       TIMELIMIT_BAR_Z_INDEX = 3500      # 当たり／ハズレのメッセージを表示するZ座標（奥行）
-      TIMELIMIT_SEC = 60                # タイムリミットバーの最大秒数
-      TIMELIMIT_BAR_MARGIN = 5          # タイムリミットバーの表示上の余白サイズ（ピクセル）
       FPS = 30                          # 1秒間の表示フレーム数
 
       # コンストラクタ
@@ -26,22 +36,18 @@ module Scenes
         super
         # 画像オブジェクトの読み込み
         @bg_img = Gosu::Image.new("images/bg_game.png", tileable: true)
+<<<<<<< HEAD
         @timelimit_bar = Gosu::Image.new("images/timelimit_bar.png", tileable: true)
+=======
+>>>>>>> utumi
         @bgm = load_bgm("bgm2.mp3", 0.1)
 
         # 各種インスタンス変数の初期化
-        @cards = []                                            # 全てのカードを保持する配列
-        @opened_cards = []                                     # オープンになっているカードを保持する配列
-        @message_display_frame_count = 0                       # メッセージ表示フレーム数のカウンタ変数
-        @judgement_result = false                              # 当たり／ハズレの判定結果（true: 当たり）
-        @score = 0                                             # 総得点
-        @cleared = false                                       # ゲームクリアが成立したか否かを保持するフラグ
-        @timelimit_scale = 1.0                                 # タイムリミットバー画像の初期長さ（割合で減衰を表現する）
-        @timelimit_decrease_unit = 1.0 / TIMELIMIT_SEC / FPS   # タイムリミットバーの減衰単位
-        @drag_start_pos = nil                                  # マウスドラッグ用フラグ兼ドラッグ開始位置記憶用変数
-        @offset_mx = 0                                         # マウスドラッグ中のカーソル座標補正用変数（X成分用）
-        @offset_my = 0                                         # マウスドラッグ中のカーソル座標補正用変数（Y成分用）
+        @cards = []
+        @cards << Scenes::Game::Card::Card1.new(100,400,1)
+        @cards << Scenes::Game::Card::Card2.new(300,400,1)
 
+<<<<<<< HEAD
         # 4種のカードについて、それぞれ13枚ずつランダムな座標にカードをばら撒く
         # NOTE: 各カードのZ値は、生成順に1から順にインクリメントして重ね合わせを表現する
         z = 1
@@ -58,7 +64,16 @@ module Scenes
             z += 1
           end
         end
+=======
+        #カードをランダムに並べ替える処理
+        @cards.shuffle!
+
+        #カードの情報をすべて受け取って、配列に格納
+        #抜かれるカードを一枚ランダムで選び、配列から削除
+>>>>>>> utumi
       end
+        
+        
 
       # 1フレーム分の更新処理
       def update(opt = {})
@@ -69,12 +84,8 @@ module Scenes
         mx = opt.has_key?(:mx) ? opt[:mx] : 0
         my = opt.has_key?(:my) ? opt[:my] : 0
 
-        # ゲームクリアフラグが立ち、且つ画面への判定結果表示が完了済みの場合、エンディングシーンへ切り替えを行う
-        if @cleared && @message_display_frame_count == 0
-          @bgm.stop if @bgm && @bgm.playing?
-          transition(:ending)
-        end
 
+<<<<<<< HEAD
         # タイムラインバーの長さが0になったらゲームオーバーとする
         if @timelimit_scale <= 0
           @bgm.stop if @bgm && @bgm.playing?
@@ -98,6 +109,8 @@ module Scenes
         # タイムリミットバーの長さを更新
         # NOTE: メッセージ表示中か否かによらず、毎フレーム一定の減衰を行うため、条件分岐の外に定義する
         @timelimit_scale -= @timelimit_decrease_unit if @timelimit_scale > 0
+=======
+>>>>>>> utumi
       end
 
       # 1フレーム分の描画処理
@@ -111,16 +124,6 @@ module Scenes
           card.draw
         end
 
-        # メッセージ表示フレーム数が2以上の場合はメッセージを表示する
-        if @message_display_frame_count > 1
-          draw_text(@message_body, :center, JUDGEMENT_MESSAGE_Y_POS, font: :judgement_result, color: @message_color)
-        end
-
-        # スコアを表示
-        draw_text("SCORE: #{@score}", :right, 5, font: :score, color: :white)
-
-        # タイムリミットバーを表示
-        @timelimit_bar.draw(0, MainWindow::HEIGHT - @timelimit_bar.height, TIMELIMIT_BAR_Z_INDEX, @timelimit_scale)
       end
 
       private

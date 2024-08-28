@@ -29,6 +29,9 @@ module Scenes
         @cnt+=1
         
         if @faze==0
+
+          @bg_color = Gosu::Color::BLACK
+
           (@snow.length - 1).downto(0) do |i|
             @snow[i].update
             #@snow.delete_at(i) if @snow[i].kill
@@ -56,7 +59,7 @@ module Scenes
 
       # 1フレーム分の描画処理
       def draw
-        Gosu.draw_rect(0, 0, 800, 600, Gosu::Color::BLACK)
+        Gosu.draw_rect(0, 0, 800, 600, @bg_color)
         @snow.each(&:draw)
 
         # @bg_img.draw(0, 0, 0)
@@ -70,12 +73,12 @@ module Scenes
         @snow.pop(MAX_SNOW / 300) if @snow.length > 0
         
         # 背景色を徐々に青空に近づける
-        target_color = Gosu::Color::CYAN
-        @bg_color = Gosu::Color.new(
-          [@bg_color.red - 1, target_color.red].max,
-          [@bg_color.green - 1, target_color.green].max,
-          [@bg_color.blue + 1, target_color.blue].min
-        )
+        #target_color = Gosu::Color::CYAN
+        #@bg_color = Gosu::Color.new(
+        #  [@bg_color.red - 1, target_color.red].max,
+        #  [@bg_color.green - 1, target_color.green].max,
+        #  [@bg_color.blue + 1, target_color.blue].min
+        #)
       end
     end
 

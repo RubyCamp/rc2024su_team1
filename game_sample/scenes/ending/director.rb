@@ -16,7 +16,15 @@ module Scenes
 
       # 1フレーム分の描画処理
       def draw
-        @bg_img.draw(0, 0, 0)
+        @bg_color = Gosu::Color::YELLOW
+
+        if $winner == "player1" 
+          draw_text("勝利者：player1", :center, 280, font: :title, color: :blue)
+        else
+          draw_text("勝利者：player2", :center, 280, font: :title, color: :blue)
+        end
+
+        draw_text("あ", :center, 350)
       end
     end
   end

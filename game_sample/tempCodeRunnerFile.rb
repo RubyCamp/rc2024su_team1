@@ -1,0 +1,1 @@
+require_relative 'scenes/game_over/director'

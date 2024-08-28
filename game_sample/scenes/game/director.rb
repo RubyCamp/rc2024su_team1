@@ -29,41 +29,21 @@ module Scenes
         super
         # 画像オブジェクトの読み込み
         @bg_img = Gosu::Image.new("images/bg_game.png", tileable: true)
-        @card = Scenes::Game::Card::Card1.new(100, 200)
         @bgm = load_bgm("bgm2.mp3", 0.1)
 
         # 各種インスタンス変数の初期化
-        @cards = []                                            # 全てのカードを保持する配列
-        @opened_cards = []                                     # オープンになっているカードを保持する配列
-        @message_display_frame_count = 0                       # メッセージ表示フレーム数のカウンタ変数
-        @judgement_result = false                              # 当たり／ハズレの判定結果（true: 当たり）
-        @score = 0                                             # 総得点
-        @cleared = false                                       # ゲームクリアが成立したか否かを保持するフラグ
-        @drag_start_pos = nil                                  # マウスドラッグ用フラグ兼ドラッグ開始位置記憶用変数
-        @offset_mx = 0                                         # マウスドラッグ中のカーソル座標補正用変数（X成分用）
-        @offset_my = 0                                         # マウスドラッグ中のカーソル座標補正用変数（Y成分用）
+        @cards = []
+        @cards << Scenes::Game::Card::Card1.new(100,400,1)
+        @cards << Scenes::Game::Card::Card2.new(300,400,1)
 
-        # 4種のカードについて、それぞれ13枚ずつランダムな座標にカードをばら撒く
-        # NOTE: 各カードのZ値は、生成順に1から順にインクリメントして重ね合わせを表現する
-        z = 1
-        [
-          Card::Card1,
-          Card::Card2,
-          Card::Card3,
-          Card::Card4,
-          Card::Card5,
-          Card::Card6,
-          Card::Card7,
-          Card::Card8
-        ].each do |klass|
-          1.upto(SUIT_AMOUNT) do |num|
-            x = rand(MainWindow::WIDTH - Card::Base::WIDTH)
-            y = rand(MainWindow::HEIGHT - Card::Base::HEIGHT)
-            @cards << klass.new(num, x, y, z)
-            z += 1
-          end
-        end
+        #カードをランダムに並べ替える処理
+        @cards.shuffle!
+
+        #カードの情報をすべて受け取って、配列に格納
+        #抜かれるカードを一枚ランダムで選び、配列から削除
       end
+        
+        
 
       # 1フレーム分の更新処理
       def update(opt = {})
@@ -74,25 +54,7 @@ module Scenes
         mx = opt.has_key?(:mx) ? opt[:mx] : 0
         my = opt.has_key?(:my) ? opt[:my] : 0
 
-        # ゲームクリアフラグが立ち、且つ画面への判定結果表示が完了済みの場合、エンディングシーンへ切り替えを行う
-        if @cleared && @message_display_frame_count == 0
-          @bgm.stop if @bgm && @bgm.playing?
-          transition(:ending)
-        end
 
-        # メッセージ表示中とそれ以外で処理を分岐
-        if @message_display_frame_count > 0
-          # メッセージ表示中の場合
-          # メッセージ表示フレーム数をデクリメントし、残り1フレーム分まで来たら開いているカードに関する後処理を行う
-          # NOTE: このように実装することで、メッセージ表示中はマウスクリック等が反応しないようにしている
-          @message_display_frame_count -= 1
-          cleaning_up if @message_display_frame_count == 1
-        else
-          # メッセージ非表示の場合
-          # マウスクリック及び合致判定を実施する
-          check_mouse_operations(mx, my)
-          judgement
-        end
       end
 
       # 1フレーム分の描画処理
@@ -104,11 +66,6 @@ module Scenes
         # NOTE: 重なり合わせを適正に表現するため、各カードの最新Z値でソートして表示する（マウスクリックでカードのZ値が変化するため）
         @cards.sort_by{|c| c.z }.each do |card|
           card.draw
-        end
-
-        # メッセージ表示フレーム数が2以上の場合はメッセージを表示する
-        if @message_display_frame_count > 1
-          draw_text(@message_body, :center, JUDGEMENT_MESSAGE_Y_POS, font: :judgement_result, color: @message_color)
         end
 
         # スコアを表示

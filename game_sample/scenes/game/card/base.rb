@@ -6,17 +6,17 @@ module Scenes
     module Card
       class Base
         @@suit_font = Gosu::Font.new(24, name: DirectorBase::FONT_FILENAME)  # マーク用フォント
-        @@number_font = Gosu::Font.new(80, name: DirectorBase::FONT_FILENAME) # 数字用フォント
+        @@number_font = Gosu::Font.new(60, name: DirectorBase::FONT_FILENAME) # 数字用フォント
         @@effect_font = Gosu::Font.new(14, name: DirectorBase::FONT_FILENAME) # 効果用フォント
 
         WIDTH = 96   # カード横幅
         HEIGHT = 128 # カード高さ
         SCALE = 1    # 描画倍率
 
-        attr_accessor :num, :x, :y, :z, :suit, :effect_text, :image
+        attr_accessor :num, :x, :y, :z, :suit, :effect_text, :imagesorce
 
-        def initializedef initialize(_num, _x, _y, _z = 1)
-          @reversed = true # 裏返し状態かどうか
+        def initialize(_num, _x, _y, _z = 1)
+          @reversed = false # 裏返し状態かどうか
           self.num = _num
           self.x = _x
           self.y = _y
@@ -27,10 +27,10 @@ module Scenes
           @num_w = @@number_font.text_width(@number_mark)
           @num_h = @@number_font.height
           @suit_w = @@suit_font.text_width(self.suit)
-          @suit_h = @@suit_font.height
+          @suit_h = @@suit_font.height 
           @effect_w = @@effect_font.text_width(self.effect_text)
           @effect_h = @@effect_font.height
-          @image = Gosu::Image.new(image_path, tileable: true) # カードの表面画像を設定
+          @image = Gosu::Image.new(imagesorce, tileable: true) # カードの表面画像を設定
         end
 
         # カードがクリックされたかを判定
@@ -84,15 +84,15 @@ module Scenes
 
         # カードの数字を描画
         def draw_number
-          num_x = self.x + (WIDTH / 2) - (@num_w / 2)
-          num_y = self.y + (HEIGHT / 2) - (@num_h / 2)
+          num_x = self.x + (WIDTH / 2) - (@num_w / 2) + 30
+          num_y = self.y + (HEIGHT / 2) - (@num_h / 2) - 30
           @@number_font.draw_text(@number_mark, num_x, num_y, self.z, SCALE, SCALE, Gosu::Color::WHITE)
         end
 
         # カードの効果テキストを描画
         def draw_effect_text
           effect_x = self.x + 5
-          effect_y = self.y + HEIGHT - @effect_h - 5
+          effect_y = self.y + HEIGHT - @effect_h -50
           @@effect_font.draw_text(self.effect_text, effect_x, effect_y, self.z, SCALE, SCALE, Gosu::Color::WHITE)
         end
 

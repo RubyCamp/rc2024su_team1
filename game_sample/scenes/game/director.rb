@@ -7,6 +7,7 @@ require_relative 'card/No.5_matcha'
 require_relative 'card/No.6_izumosoba'
 require_relative 'card/No.7_sanreiku'
 require_relative 'card/No.8_izumotemple'
+#require_relative '../director_base'
 
 module Scenes
   module Game
@@ -46,59 +47,158 @@ module Scenes
         @offset_mx = 0                                         # マウスドラッグ中のカーソル座標補正用変数（X成分用）
         @offset_my = 0                                         # マウスドラッグ中のカーソル座標補正用変数（Y成分用）
         #@card = Card::Space.new(1, 400, 400, 1)
+
+        @original_array = [1, 1, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 7, 8]
+        element = @original_array.sample # ランダムに1つの要素を取得
+        @original_array.delete(element) # 取得した要素を削除
+        @deck = @original_array.shuffle
+        @idx = 2
+
+        #@input_flag = 1   #入力するプレイヤーの指定
+        #@now_flag = false #選択する場面になったらtrue
+
+        @p1_deck = [] #player1の手札
+        @p2_deck = [] #player2の手札
+
+        @p1_wol = "U" #player1の勝敗
+        @p2_wol = "U" #player2の勝敗
+
+        @order = "None"
+        @current_card = -1
+        @previous_card = -1
+
+        @skip_7 = false #7を引いた時のeffectスキップ
+        #@key_input = nil
+        #@key_state = {} # インスタンス変数に変更
+
+        setup_game
       end
 
-      original_array = [1, 1, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 7, 8]
-      deck = original_array.shuffle
-      puts "シャッフル前: #{original_array}"
-      puts "シャッフル後: #{deck}"
-
-      p1_deck = [1]
-      p2_deck = [1]
-
-      p1_wol = "U"
-      p2_wol = "U" 
-
-      #先攻、後攻を決める
-      start_order = [1, 2]
-      start_order = start_order.shuffle
+      def setup_game
+        puts "シャッフル前: #{@original_array}"
+        puts "シャッフル後: #{@deck}"
       
-      order = start_order[0] == 1 ? "p1" : "p2"
+        # 先攻、後攻を決める
+        start_order = [1, 2].shuffle
+        @order = start_order[0] == 1 ? "p1" : "p2"
       
+        if @order == "p1"
+          @p1_deck << @deck[0]
+          @p2_deck << @deck[1]
+        else
+          @p1_deck << @deck[1]
+          @p2_deck << @deck[0]
+        end
+      
+        puts "@p1_deck: #{@p1_deck.inspect}"
+        puts "@p2_deck: #{@p2_deck.inspect}"
 
-      #ゲーム開始
-      cc1 = Card::Effect1.new(p1_deck, p2_deck, order, p1_wol, p2_wol)
-      cc1.judge
-
-      p1_wol = cc1.p1_wol
-      p2_wol = cc1.p2_wol
-      puts p1_wol
-      puts p2_wol
-=begin
-      #山札がすべてなくなる，または，残り１人になるまで繰り返す
-      while idx < 15 && survivor.length != 1
-          #山札から１枚カードを引く
-          first_card << deck[idx]
-          idx += 1
-
-          #firstの処理
-
-          #山札から１枚カードを引く
-          second_card << deck[idx]
-          idx += 1
-
-          #secondの処理
-
-
-          puts "f #{first_card.join(', ')}"
-          puts "s #{second_card.join(', ')}"
+        process_turns
       end
-=end
+
+      def process_turns
+        while @idx < 14
+          puts "#{@order}のターンです。"
+          if @order == "p1"
+            @p1_deck.unshift(@deck[@idx])
+            puts "カードを引きました。#{@p1_deck}"
+            if @deck[@idx] == 7 && (@p1_deck[1] == 5 || @p1_deck[1] == 6)
+              @current_card = @p1_deck[1]
+              @p1_deck.delete_at(1)
+              @skip_7 = true
+            else
+              puts "左のカードを出す"
+              @idx += 1
+              @current_card = @p1_deck[0]
+              @p1_deck.delete_at(0)
+            end
+          else
+            @p2_deck.unshift(@deck[@idx])
+            puts "カードを引きました。#{@p2_deck}"
+            if @deck[@idx] == 7 && (@p2_deck[1] == 5 || @p2_deck[1] == 6)
+              @current_card = @p2_deck[1]
+              @p2_deck.delete_at(1)
+              @skip_7 = true
+            else
+              puts "左のカードを出す"
+              @idx += 1
+              @current_card = @p2_deck[0]
+              @p2_deck.delete_at(0)
+            end
+          end
+
+          puts "current_card:#{@current_card}"
+          case @current_card
+          when 1
+            card_effect = Card::Effect1.new(@p1_deck, @p2_deck, @order, @p1_wol, @p2_wol)
+          when 2
+            card_effect = Card::Effect2.new(@p1_deck, @p2_deck, @order, @p1_wol, @p2_wol)
+          when 3
+            card_effect = Card::Effect3.new(@p1_deck, @p2_deck, @order, @p1_wol, @p2_wol)
+          when 4
+            card_effect = Card::Effect4.new(@p1_deck, @p2_deck, @order, @p1_wol, @p2_wol)
+          when 5
+            card_effect = Card::Effect5.new(@p1_deck, @p2_deck, @order, @p1_wol, @p2_wol)
+          when 6
+            card_effect = Card::Effect6.new(@p1_deck, @p2_deck, @order, @p1_wol, @p2_wol)
+          when 7
+            card_effect = Card::Effect7.new(@p1_deck, @p2_deck, @order, @p1_wol, @p2_wol)
+          when 8
+            card_effect = Card::Effect8.new(@p1_deck, @p2_deck, @order, @p1_wol, @p2_wol)
+          end
+      
+          if @previous_card != 4 && !@skip_7
+            card_effect.judge
+            if @current_card == 5 && @idx < 14
+              if @order == "p1"
+                @p2_deck.unshift(@deck[@idx])
+              else
+                @p1_deck.unshift(@deck[@idx])
+              end
+              @idx += 1
+            end
+          end
+          @skip_7 = false
+
+          @p1_wol = card_effect.p1_wol
+          @p2_wol = card_effect.p2_wol
+      
+          if @p1_wol != "U" && @p2_wol != "U"
+            puts "勝負あり"
+            puts "p1の勝敗:#{@p1_wol}  p2の勝敗:#{@p2_wol}"
+            break
+          end
+      
+          @order = (@order == "p1") ? "p2" : "p1"
+          @previous_card = @current_card
+          @current_card = -1
+      
+          puts ""
+          puts "Next"
+        end
+        puts "#{@p1_deck} #{@p2_deck}"
+      end
+      
+
 
       # 1フレーム分の更新処理
       def update(opt = {})
         # BGMをスタートする（未スタート時のみ）
         #@bgm.play if @bgm && !@bgm.playing?
+=begin
+        if @now_flag
+          # プレイヤー1が入力待ち状態の場合
+          if @input_flag == 1
+            if key_push?(Gosu::KB_LEFT)
+              @key_input = :left
+            elsif key_push?(Gosu::KB_RIGHT)
+              @key_input = :right
+            else
+              @key_input = nil
+            end
+          end
+        end
+=end
 
         # マウスの現在座標を変数化しておく
         mx = opt.has_key?(:mx) ? opt[:mx] : 0
@@ -275,7 +375,7 @@ module Scenes
         end
 =end
         # 開いたカードリストをクリア
-        #@opened_cards.clear
+        #@opened_cards.clea
     end
   end
 end

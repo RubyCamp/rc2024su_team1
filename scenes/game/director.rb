@@ -38,7 +38,7 @@ module Scenes
         @card.draw
   
     end
-
+=begin
     private
 
 
@@ -67,7 +67,8 @@ module Scenes
         @offset_my = my - @opened_card.y
       end
     end
-
+=end
+=begin
     # ドラッグ中に発生する処理
     def dragging(mx, my)
       # 現在開いているカードが無い場合は何もしない（移動するべき対象物が無いため）
@@ -105,6 +106,7 @@ module Scenes
       # 開いたカードリストをクリア
       @opened_cards.clear
     end
+=end
   end
   end
 end

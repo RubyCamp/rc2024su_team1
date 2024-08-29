@@ -54,13 +54,6 @@ module Scenes
         @deck = @original_array.shuffle
         @idx = 2
 
-        @card1 = nil
-        @card2 = nil
-        @card3 = nil
-
-        #@input_flag = 1   #入力するプレイヤーの指定
-        #@now_flag = false #選択する場面になったらtrue
-
         @p1_deck = [] #player1の手札
         @p2_deck = [] #player2の手札
 
@@ -74,8 +67,13 @@ module Scenes
         @skip_7 = false #7を引いた時のeffectスキップ
 
         @start_flag = true #ゲーム開始のフラグ
-        #@key_input = nil
-        #@key_state = {} # インスタンス変数に変更
+        @board = 1         #ボードパターン(1:初期, 2:引く, )
+        @pros_flag = false #ゲーム進行のflag
+        @please_pick = false #カードを引く動作
+        @please_choose = false #カードを選ぶ動作
+        @waiting_for_click = false # マウスクリック待機のフラグ
+
+        @bg_img = Gosu::Image.new("images/game_back.jpg", tileable: true)
 
         setup_game
       end
@@ -104,32 +102,41 @@ module Scenes
         while @idx < 14
           puts "#{@order}のターンです。"
           if @order == "p1"
+            #山札クリック
+            @please_pick = true
             @p1_deck.unshift(@deck[@idx])
             puts "カードを引きました。#{@p1_deck}"
+            #引っかかり
             if @deck[@idx] == 7 && (@p1_deck[1] == 5 || @p1_deck[1] == 6)
               @current_card = @p1_deck[1]
               @p1_deck.delete_at(1)
               @skip_7 = true
             else
+              @please_choose = true
+              #引っかかり
               puts "左のカードを出す"
-              @idx += 1
               @current_card = @p1_deck[0]
               @p1_deck.delete_at(0)
             end
           else
+            @please_pick = true
             @p2_deck.unshift(@deck[@idx])
             puts "カードを引きました。#{@p2_deck}"
+            #引っかかり
             if @deck[@idx] == 7 && (@p2_deck[1] == 5 || @p2_deck[1] == 6)
               @current_card = @p2_deck[1]
               @p2_deck.delete_at(1)
               @skip_7 = true
             else
+              @please_choose = true
+              #引っかかり
               puts "左のカードを出す"
-              @idx += 1
               @current_card = @p2_deck[0]
               @p2_deck.delete_at(0)
             end
           end
+          @idx += 1
+          @please_choose = false
 
           puts "current_card:#{@current_card}"
           case @current_card
@@ -191,33 +198,48 @@ module Scenes
 
       # 1フレーム分の更新処理
       def update(opt = {})
+        mx = opt.has_key?(:mx) ? opt[:mx] : 0
+        my = opt.has_key?(:my) ? opt[:my] : 0
+
         if $phase == 1 && @start_flag
           process_turns
           @start_flag = false
         end
 
-        # BGMをスタートする（未スタート時のみ）
-        #@bgm.play if @bgm && !@bgm.playing?
-=begin
-        if @now_flag
-          # プレイヤー1が入力待ち状態の場合
-          if @input_flag == 1
-            if key_push?(Gosu::KB_LEFT)
-              @key_input = :left
-            elsif key_push?(Gosu::KB_RIGHT)
-              @key_input = :right
-            else
-              @key_input = nil
-            end
+        if @waiting_for_click && Gosu.button_down?(Gosu::MsLeft)
+          @waiting_for_click = false
+        end
+
+        if @board == 1 && @please_pick
+          # 山札エリアのクリック検出
+          if Gosu.button_down?(Gosu::MsLeft) && mx > 600 && mx < 750 && my > 200 && my < 400
+            @board = 2
+            @please_pick = false
+            @please_choose = true
           end
         end
-=end
 
+        if @board == 2 && @please_choose
+          #左のカード選択
+          if Gosu.button_down?(Gosu::MsLeft) && mx > 100 && mx < 250 && my > 350 && my < 550
+            @board = 1
+            @please_choose = false
+            @please_pick = true
+          end
+          
+          #右のカード選択
+          if Gosu.button_down?(Gosu::MsLeft) && mx > 350 && mx < 500 && my > 350 && my < 550
+            @board = 1
+            @please_choose = false
+            @please_pick = true
+          end
+        end
+ 
+        # BGMをスタートする（未スタート時のみ）
+        #@bgm.play if @bgm && !@bgm.playing?
         
 
         # マウスの現在座標を変数化しておく
-        mx = opt.has_key?(:mx) ? opt[:mx] : 0
-        my = opt.has_key?(:my) ? opt[:my] : 0
 
 =begin
         if Gosu.button_down?(Gosu::MsLeft)
@@ -266,9 +288,9 @@ module Scenes
 
       # 1フレーム分の描画処理
       def draw
-        Gosu.draw_rect(0, 0, 800, 600, Gosu::Color::BLACK)
+        @bg_img.draw(0, 0, 0)
         # 背景画像を表示
-        if @p1_deck.length == 2
+        if @board == 2
           Gosu.draw_rect(100, 350, 150, 200, Gosu::Color::GREEN) #手前の左
           Gosu.draw_rect(350, 350, 150, 200, Gosu::Color::GREEN) #手前の右
 

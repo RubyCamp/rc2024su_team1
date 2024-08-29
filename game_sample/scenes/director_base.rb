@@ -22,6 +22,7 @@ module Scenes
         green: 0xff_00ff00,
         blue: 0xff_0000ff,
       }
+      $phase = nil
     end
 
     # 1フレーム分の更新処理
@@ -63,6 +64,11 @@ module Scenes
     # シーン切り替えの実行
     def transition(label)
       Scenes::Manager.instance.set(label.to_sym)
+      if $phase.nil?
+        $phase = 1
+      else
+        $phase += 1
+      end
     end
 
     # 文字列描画におけるX座標の変換処理

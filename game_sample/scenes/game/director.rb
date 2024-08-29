@@ -54,6 +54,10 @@ module Scenes
         @deck = @original_array.shuffle
         @idx = 2
 
+        @card1 = nil
+        @card2 = nil
+        @card3 = nil
+
         #@input_flag = 1   #入力するプレイヤーの指定
         #@now_flag = false #選択する場面になったらtrue
 
@@ -68,6 +72,8 @@ module Scenes
         @previous_card = -1
 
         @skip_7 = false #7を引いた時のeffectスキップ
+
+        @start_flag = true #ゲーム開始のフラグ
         #@key_input = nil
         #@key_state = {} # インスタンス変数に変更
 
@@ -92,8 +98,6 @@ module Scenes
       
         puts "@p1_deck: #{@p1_deck.inspect}"
         puts "@p2_deck: #{@p2_deck.inspect}"
-
-        process_turns
       end
 
       def process_turns
@@ -187,6 +191,11 @@ module Scenes
 
       # 1フレーム分の更新処理
       def update(opt = {})
+        if $phase == 1 && @start_flag
+          process_turns
+          @start_flag = false
+        end
+
         # BGMをスタートする（未スタート時のみ）
         #@bgm.play if @bgm && !@bgm.playing?
 =begin
@@ -204,9 +213,17 @@ module Scenes
         end
 =end
 
+        
+
         # マウスの現在座標を変数化しておく
         mx = opt.has_key?(:mx) ? opt[:mx] : 0
         my = opt.has_key?(:my) ? opt[:my] : 0
+
+=begin
+        if Gosu.button_down?(Gosu::MsLeft)
+          puts mx > 225 && mx < 
+        end
+=end
 
         # ゲームクリアフラグが立ち、且つ画面への判定結果表示が完了済みの場合、エンディングシーンへ切り替えを行う
         #if @cleared && @message_display_frame_count == 0
@@ -215,13 +232,20 @@ module Scenes
           transition(:ending)
         end
 
-        
-        # タイムラインバーの長さが0になったらゲームオーバーとする
-        ##
 =begin
-        if @timelimit_scale <= 0
-          @bgm.stop if @bgm && @bgm.playing?
-          transition(:game_over)
+        if(@p1_deck.length == 1)
+          @card1 = Card::Base.new(@p1_deck[0], 225, 300, 1)
+        elsif(@p1_deck.length == 2)
+          @card1 = Card::Base.new(@p1_deck[0], 100, 350, 1)
+          @card2 = Card::Base.new(@p1_deck[1], 350, 350, 1)
+        end
+
+        # 相手の手札
+        if(@p2_deck.length == 1)
+          @card2 = Card::Base.new(@p1_deck[0], 225, 300, 1)
+        elsif(@p2_deck.length == 2)
+          @card2 = Card::Base.new(@p1_deck[0], 100, 350, 1)
+          @card3 = Card::Base.new(@p1_deck[1], 350, 350, 1)
         end
 =end
 
@@ -235,20 +259,30 @@ module Scenes
         else
           # メッセージ非表示の場合
           # マウスクリック及び合致判定を実施する
-          check_mouse_operations(mx, my)
-          judgement
+          #check_mouse_operations(mx, my)
+          #judgement
         end
-
-        # タイムリミットバーの長さを更新
-        # NOTE: メッセージ表示中か否かによらず、毎フレーム一定の減衰を行うため、条件分岐の外に定義する
-        #@timelimit_scale -= @timelimit_decrease_unit if @timelimit_scale > 0
       end
 
       # 1フレーム分の描画処理
       def draw
-        # 背景画像を表示
         Gosu.draw_rect(0, 0, 800, 600, Gosu::Color::BLACK)
+        # 背景画像を表示
+        if @p1_deck.length == 2
+          Gosu.draw_rect(100, 350, 150, 200, Gosu::Color::GREEN) #手前の左
+          Gosu.draw_rect(350, 350, 150, 200, Gosu::Color::GREEN) #手前の右
 
+          Gosu.draw_rect(600, 200, 150, 200, Gosu::Color::GREEN) #山札
+
+          Gosu.draw_rect(225, 50, 150, 200, Gosu::Color::GREEN) #相手の手札
+        else
+          Gosu.draw_rect(225, 350, 150, 200, Gosu::Color::GREEN) #自分の手札
+
+          Gosu.draw_rect(600, 200, 150, 200, Gosu::Color::GREEN) #山札
+
+          Gosu.draw_rect(225, 50, 150, 200, Gosu::Color::GREEN) #相手の手札
+        end
+        
 =begin
         # 全カードを表示
         # NOTE: 重なり合わせを適正に表現するため、各カードの最新Z値でソートして表示する（マウスクリックでカードのZ値が変化するため）
@@ -298,6 +332,7 @@ module Scenes
       end
 
       # マウスによる操作判定
+=begin
       def check_mouse_operations(mx, my)
         if Gosu.button_down?(Gosu::MsLeft)
           # マウスの左ボタンがクリックされている場合
@@ -316,7 +351,7 @@ module Scenes
           @drag_start_pos = nil
         end
       end
-
+=end
       # 新規ドラッグ開始時の処理
       # マウスカーソル座標上に存在する最もZ値の高いカードをオープンし、掴んだ状態にする
       def start_drag(mx, my)
